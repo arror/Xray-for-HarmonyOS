@@ -1,0 +1,51 @@
+{
+  "module": {
+    "name": "app",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "AppAbility",
+    "deviceTypes": [
+      "phone"
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO"
+      }
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "AppAbility",
+        "srcEntry": "./ets/abilities/AppAbility.ets",
+        "description": "$string:AppAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:AppAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "VpnAbility",
+        "srcEntry": "./ets/abilities/VpnAbility.ets",
+        "type": "vpn"
+      }
+    ]
+  }
+}

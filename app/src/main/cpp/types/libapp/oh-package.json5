@@ -1,0 +1,6 @@
+{
+  "name": "libapp.so",
+  "types": "./Index.d.ts",
+  "version": "1.0.0",
+  "description": "提供 ArkTS 调用 Golang API 接口"
+}

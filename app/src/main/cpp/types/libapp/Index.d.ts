@@ -1,0 +1,1 @@
+export const run: (config: Uint8Array) => number;
