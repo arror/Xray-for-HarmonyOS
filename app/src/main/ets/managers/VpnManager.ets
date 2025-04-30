@@ -25,7 +25,7 @@ export class VpnManager {
         const inbound = InboundManager.inbound()
         vpnExtension.startVpnExtensionAbility({
           deviceId: '',
-          bundleName: 'com.arror.vpn',
+          bundleName: 'com.arror.xray',
           abilityName: 'VpnAbility',
           parameters: { id, inbound }
         }).then(() => {
@@ -51,7 +51,7 @@ export class VpnManager {
       this.client.close().finally(() => {
         vpnExtension.stopVpnExtensionAbility({
           deviceId: '',
-          bundleName: 'com.arror.vpn',
+          bundleName: 'com.arror.xray',
           abilityName: 'VpnAbility'
         }).finally(() => {
           this.status = VpnStatus.Disconnected
