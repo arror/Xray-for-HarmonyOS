@@ -1,5 +1,6 @@
 import { ArrayUtil, PasteboardUtil } from "@pura/harmony-utils"
 import { TitleTextModifier } from "../../components/TitleTextModifier"
+import { Inbound } from "../../constant/Tun"
 import { InboundManager } from "../../managers/InboundManager"
 
 @Builder
@@ -18,7 +19,7 @@ struct SettingsInboundPage {
         ListItem()
         ListItemGroup() {
           ListItem() {
-            this.buildInfoView('标识', InboundManager.inboundTag)
+            this.buildInfoView('标识', Inbound.tag)
           }
         }
         .padding({ top: 4, bottom: 4 })
@@ -27,19 +28,19 @@ struct SettingsInboundPage {
         .borderRadius(16)
         ListItemGroup() {
           ListItem() {
-            this.buildInfoView('网卡地址', InboundManager.inboundAddress)
+            this.buildInfoView('网卡地址', Inbound.address)
           }
           ListItem() {
             this.buildDivider()
           }
           ListItem() {
-            this.buildInfoView('DNS服务器地址', InboundManager.inboundDNSAddress)
+            this.buildInfoView('DNS服务器地址', Inbound.dnsAddress)
           }
           ListItem() {
             this.buildDivider()
           }
           ListItem() {
-            this.buildInfoView('最大传输单元', InboundManager.inboundMTU + '')
+            this.buildInfoView('最大传输单元', Inbound.mtu + '')
           }
         }
         .padding({ top: 4, bottom: 4 })

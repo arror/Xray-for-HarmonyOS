@@ -65,12 +65,11 @@ export struct VpnConnectButton {
     const documentPicker = new picker.DocumentViewPicker()
     documentPicker.select(options).then((file) => {
       if (file.length === 1) {
-        const id = util.generateRandomUUID()
         const srcPath = file[0]
-        const dstPath = FileUtil.getTempDirPath(undefined, `${id}.json`)
+        const dstPath = FileUtil.getTempDirPath(undefined, 'config.json')
         fs.copy(srcPath, dstPath).then(() => {
           this.manager.processConfig(dstPath).then(() => {
-            this.manager.startVpn(id)
+            this.manager.startVpn()
           })
         })
       }

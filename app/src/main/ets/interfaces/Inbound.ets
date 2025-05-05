@@ -1,15 +1,13 @@
-import { vpnExtension } from "@kit.NetworkKit"
-
-export interface Sniffing {
+export interface TunSniffingConfig {
   enabled: boolean
   overrideDestinationForProtocol: string[]
   metadataOnly: boolean
   routeOnly: boolean
 }
 
-export interface Inbound {
+export interface TunConfig {
   tag: string
   fd: number
-  config: vpnExtension.VpnConfig
-  sniffing: Sniffing
+  mtu: number
+  sniffing: TunSniffingConfig
 }

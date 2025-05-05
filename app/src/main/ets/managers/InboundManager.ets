@@ -1,67 +1,44 @@
 import { PreferencesUtil } from "@pura/harmony-utils"
-import { Inbound } from "../interfaces/Inbound"
+import { TunSniffingConfig } from "../interfaces/Inbound"
 
-const InboundKey = 'INBOUND_KEY'
+const INBOUND_SNIFFING_KEY = 'INBOUND_SNIFFING_KEY'
 
 @ObservedV2
 export class InboundManager {
-
-  static readonly inboundTag: string = 'tun'
-  static readonly inboundAddress: string = '172.16.0.1'
-  static readonly inboundAddressPrefixLength: number = 30
-  static readonly inboundDNSAddress: string = '172.16.0.2'
-  static readonly inboundMTU: number = 1500
 
   @Trace sniffingEnabled: boolean = false
   @Trace sniffingOverrideDestinationForProtocol: string[] = []
   @Trace sniffingMetadataOnly: boolean = false
   @Trace sniffingRouteOnly: boolean = false
 
-  private static readonly default: Inbound = {
-    tag: InboundManager.inboundTag,
-    fd: 0,
-    config: {
-      addresses: [
-        {
-          address: {
-            address: InboundManager.inboundAddress
-          },
-          prefixLength: InboundManager.inboundAddressPrefixLength
-        }
-      ],
-      dnsAddresses: [InboundManager.inboundDNSAddress],
-      mtu: InboundManager.inboundMTU
-    },
-    sniffing: {
+  constructor() {
+    const sniffing = PreferencesUtil.getSync(INBOUND_SNIFFING_KEY, {
       enabled: false,
       overrideDestinationForProtocol: [],
       metadataOnly: false,
       routeOnly: false
-    }
-  }
-
-  constructor() {
-    const inbound = PreferencesUtil.getSync(InboundKey, InboundManager.default) as Inbound
-    this.sniffingEnabled = inbound.sniffing.enabled ?? false
-    this.sniffingOverrideDestinationForProtocol = inbound.sniffing.overrideDestinationForProtocol ?? []
-    this.sniffingMetadataOnly = inbound.sniffing.metadataOnly ?? false
-    this.sniffingRouteOnly = inbound.sniffing.routeOnly ?? false
+    }) as TunSniffingConfig
+    this.sniffingEnabled = sniffing.enabled ?? false
+    this.sniffingOverrideDestinationForProtocol = sniffing.overrideDestinationForProtocol ?? []
+    this.sniffingMetadataOnly = sniffing.metadataOnly ?? false
+    this.sniffingRouteOnly = sniffing.routeOnly ?? false
   }
 
   update(): void {
-    PreferencesUtil.put(InboundKey, {
-      tag: InboundManager.default.tag,
-      config: InboundManager.default.config,
-      sniffing: {
-        enabled: this.sniffingEnabled,
-        overrideDestinationForProtocol: this.sniffingOverrideDestinationForProtocol,
-        metadataOnly: this.sniffingMetadataOnly,
-        routeOnly: this.sniffingRouteOnly
-      }
-    } as Inbound)
+    PreferencesUtil.put(INBOUND_SNIFFING_KEY, {
+      enabled: this.sniffingEnabled,
+      overrideDestinationForProtocol: this.sniffingOverrideDestinationForProtocol,
+      metadataOnly: this.sniffingMetadataOnly,
+      routeOnly: this.sniffingRouteOnly
+    } as TunSniffingConfig)
   }
 
-  static inbound(): Inbound {
-    return PreferencesUtil.getSync(InboundKey, InboundManager.default) as Inbound
+  static inboundSniffing(): TunSniffingConfig {
+    return PreferencesUtil.getSync(INBOUND_SNIFFING_KEY, {
+      enabled: false,
+      overrideDestinationForProtocol: [],
+      metadataOnly: false,
+      routeOnly: false
+    }) as TunSniffingConfig
   }
 }

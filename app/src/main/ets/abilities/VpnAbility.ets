@@ -1,24 +1,33 @@
 import { vpnExtension, VpnExtensionAbility, VpnExtensionContext } from "@kit.NetworkKit";
 import { JSON, process, taskpool, util } from "@kit.ArkTS";
 import app from "libapp.so";
-import { Want } from "@kit.AbilityKit";
-import { Inbound } from "../interfaces/Inbound";
+import { Inbound } from "../constant/Tun";
+import { FileUtil } from "@pura/harmony-utils";
 
 export default class VpnAbility extends VpnExtensionAbility {
 
   private vpnConnection: vpnExtension.VpnConnection = Object()
 
-  async onCreate(want: Want): Promise<void> {
+  async onCreate(): Promise<void> {
+
     try {
       this.vpnConnection = vpnExtension.createVpnConnection(this.context)
-      if (want.parameters) {
-        const inbound = want.parameters['inbound'] as Inbound
-        const id = want.parameters['id'] as string
-        inbound.fd = await this.vpnConnection.create(inbound.config)
-        await taskpool.execute(Run, id, inbound, this.context)
-      } else {
-        throw new Error
+      const path = this.context.tempDir + '/config.json'
+      interface Tun {
+        fd: number
       }
+      interface Config {
+        tun: Tun
+      }
+      const config = JSON.parse(await FileUtil.readText(path)) as Config
+      config.tun.fd = await this.vpnConnection.create({
+        addresses: [{ address: { address: Inbound.address }, prefixLength: Inbound.addressPrefixLength }],
+        dnsAddresses: [Inbound.dnsAddress],
+        mtu: Inbound.mtu
+      })
+      await FileUtil.unlink(path)
+      await FileUtil.writeEasy(path, JSON.stringify(config), false)
+      await taskpool.execute(Run, this.context)
     } catch {
       const pm = new process.ProcessManager()
       pm.exit(0)
@@ -30,25 +39,14 @@ export default class VpnAbility extends VpnExtensionAbility {
   }
 }
 
-interface VpnRunConfig {
-  id: string
-  inbound: Inbound
-  filesDir: string
-  cacheDir: string
-  tempDir: string
-}
-
 @Concurrent
-function Run(id: string, inbound: Inbound, context: VpnExtensionContext) {
-  const cfg: VpnRunConfig = {
-    id: id,
-    inbound: inbound,
+function Run(context: VpnExtensionContext) {
+  const encoder = new util.TextEncoder()
+  if (app.run(encoder.encodeInto(JSON.stringify({
     filesDir: context.filesDir,
     cacheDir: context.cacheDir,
     tempDir: context.tempDir
-  }
-  const encoder = new util.TextEncoder()
-  if (app.run(encoder.encodeInto(JSON.stringify(cfg))) === 0) {
+  }))) === 0) {
     return
   } else {
     throw new Error('VPN RUN FAILED')
