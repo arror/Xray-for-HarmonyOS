@@ -2,7 +2,6 @@ import { SettingsAssetPageBuilder } from '../settings/SettingsAssetPage'
 import { SettingsIcon } from '../../components/SettingsIcon'
 import { VpnConnectButton } from '../../components/VpnConnectButton'
 import { TitleTextModifier } from '../../components/TitleTextModifier'
-import { SettingsInboundPageBuilder } from '../settings/SettingsInboundPage'
 import { VpnManager } from '../../managers/VpnManager'
 import { SettingsLogPageBuilder } from '../settings/SettingsLogPage'
 
@@ -19,14 +18,6 @@ struct MainPage {
       List({ space: 32 }) {
         ListItem()
         ListItemGroup() {
-          ListItem() {
-            this.buildEntryView($r('sys.symbol.download'), $r('app.color.green_400'), '入站设置')
-          }
-          .onClick(() => this.stack.pushDestinationByName('SettingsInboundPage', {}))
-          ListItem() {
-            Divider()
-              .padding({ left: 52 })
-          }
           ListItem() {
             this.buildEntryView($r('sys.symbol.folder'), $r('app.color.blue_400'), '规则文件管理')
           }
@@ -89,9 +80,7 @@ struct MainPage {
 
   @Builder
   private buildNavDestination(name: string, param: Object) {
-    if (name === 'SettingsInboundPage') {
-      SettingsInboundPageBuilder(name, param)
-    } else if (name === 'SettingsAssetPage') {
+    if (name === 'SettingsAssetPage') {
       SettingsAssetPageBuilder(name, param)
     } else if (name === 'SettingsLogPage') {
       SettingsLogPageBuilder(name, param)

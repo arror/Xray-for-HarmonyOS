@@ -1,7 +1,7 @@
 import { vpnExtension, VpnExtensionAbility, VpnExtensionContext } from "@kit.NetworkKit";
 import { JSON, process, taskpool, util } from "@kit.ArkTS";
 import app from "libapp.so";
-import { Inbound } from "../constant/Tun";
+import { Tun } from "../constant/Tun";
 import { FileUtil } from "@pura/harmony-utils";
 
 export default class VpnAbility extends VpnExtensionAbility {
@@ -15,16 +15,19 @@ export default class VpnAbility extends VpnExtensionAbility {
       const path = this.context.tempDir + '/config.json'
       interface Tun {
         fd: number
+        mtu: number
       }
       interface Config {
         tun: Tun
       }
       const config = JSON.parse(await FileUtil.readText(path)) as Config
+      config.tun.mtu = Tun.mtu
       config.tun.fd = await this.vpnConnection.create({
-        addresses: [{ address: { address: Inbound.address }, prefixLength: Inbound.addressPrefixLength }],
-        dnsAddresses: [Inbound.dnsAddress],
-        mtu: Inbound.mtu
+        addresses: [{ address: { address: Tun.address }, prefixLength: Tun.addressPrefixLength }],
+        dnsAddresses: [Tun.dnsAddress],
+        mtu: Tun.mtu
       })
+      console.log(JSON.stringify(config))
       await FileUtil.unlink(path)
       await FileUtil.writeEasy(path, JSON.stringify(config), false)
       await taskpool.execute(Run, this.context)

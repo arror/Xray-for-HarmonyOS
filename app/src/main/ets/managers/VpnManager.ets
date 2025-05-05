@@ -1,8 +1,5 @@
 import { socket, vpnExtension } from "@kit.NetworkKit";
 import { FileUtil } from "@pura/harmony-utils";
-import { Inbound } from "../constant/Tun";
-import { TunConfig } from "../interfaces/Inbound";
-import { InboundManager } from "./InboundManager";
 import { Log, LogManager } from "./LogManager";
 
 export enum VpnStatus {
@@ -92,7 +89,6 @@ export class VpnManager {
       metrics: Any | undefined
       observatory: Any | undefined
       burstObservatory: Any | undefined
-      tun: TunConfig | undefined
     }
     const config = JSON.parse(await FileUtil.readText(path)) as Config
     config.api = undefined
@@ -112,23 +108,6 @@ export class VpnManager {
     config.observatory = undefined
     config.burstObservatory = undefined
     config.log = LogManager.log()
-    if (config.tun) {
-      config.tun.tag = Inbound.tag
-      config.tun.fd = 0
-      config.tun.mtu = Inbound.mtu
-    } else {
-      config.tun = {
-        tag: Inbound.tag,
-        fd: 0,
-        mtu: Inbound.mtu,
-        sniffing: {
-          enabled: false,
-          overrideDestinationForProtocol: [],
-          metadataOnly: false,
-          routeOnly: false
-        }
-      }
-    }
     await FileUtil.unlink(path)
     await FileUtil.writeEasy(path, JSON.stringify(config), false)
   }
